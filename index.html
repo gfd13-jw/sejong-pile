@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title data-id="th-modified">삼성E&A 세종 2.0 현장-2,3호기 | 파일 입고 관리</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --accent: #2563eb;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --gray: #64748b;
+      --etc-bg: #fff7ed;
+      --etc-color: #ea580c;
+      --etc-border: #fed7aa;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
+    .container { max-width: 540px; margin: 0 auto; position: relative; }
+
+    /* 모서리 제작자 서명 */
+    .author-badge { text-align: right; font-size: 11px; color: #94a3b8; font-weight: 500; margin-bottom: 4px; padding-right: 4px; }
+
+    /* 현장 헤더 */
+    .site-header { background: #0f172a; color: #f8fafc; padding: 12px 16px; border-radius: 12px; text-align: center; font-size: 17px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+    /* 날짜 선택 바 */
+    .date-bar { background: var(--card); padding: 10px 14px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .date-input { font-size: 15px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 10px; color: var(--text); }
+    .today-btn { background: #e0e7ff; color: var(--accent); border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+    /* 최상단 요약 카드 */
+    .summary-card { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.22); }
+    .summary-title { font-size: 13px; font-weight: 600; opacity: 0.9; margin-bottom: 8px; }
+    
+    .main-totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .total-box { background: rgba(255, 255, 255, 0.16); padding: 8px 12px; border-radius: 10px; text-align: center; }
+    .total-label { font-size: 12px; opacity: 0.9; margin-bottom: 2px; }
+    .total-val { font-size: 30px; font-weight: 800; line-height: 1.1; }
+
+    /* 파일 길이 4종 그리드 (본수: 12px / 대수: 15px) */
+    .sub-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; border-top: 1px solid rgba(255,255,255,0.25); padding-top: 12px; }
+    .sub-item { 
+      background: rgba(255,255,255,0.15); 
+      padding: 10px 4px; 
+      border-radius: 10px; 
+      text-align: center; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .sub-label { font-size: 13px; font-weight: 800; opacity: 0.95; margin-bottom: 3px; }
+    .sub-num { 
+      font-size: 12px; 
+      font-weight: 600; 
+      line-height: 1.2; 
+      color: rgba(255, 255, 255, 0.85); 
+    }
+    .sub-cars { 
+      font-size: 15px; 
+      font-weight: 800; 
+      color: #fef08a; /* 눈에 띄는 노란색 */
+      margin-top: 4px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      line-height: 1.1;
+    }
+
+    /* 입력 폼 카드 */
+    .form-card { background: var(--card); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .card-heading { font-size: 15px; font-weight: bold; margin-bottom: 12px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .form-group { flex: 1; }
+    .form-group label { display: block; font-size: 13px; color: var(--gray); margin-bottom: 6px; font-weight: 700; }
+    .input-field { width: 100%; font-size: 15px; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; }
+    .input-field:focus { border-color: var(--accent); }
+
+    /* 시간 컨트롤 바 */
+    .time-control-group { display: flex; gap: 6px; align-items: center; }
+    .time-now-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 10px; height: 38px; font-size: 13px; font-weight: 700; color: #334155; cursor: pointer; white-space: nowrap; }
+    .time-now-btn:active { background: #e2e8f0; }
+
+    /* 라디오 버튼 공통 (제조사 5종 & 길이 4종) */
+    .radio-group { display: flex; gap: 6px; }
+    .radio-label { flex: 1; text-align: center; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; background: #fff; }
+    input[type="radio"] { display: none; }
+    input[type="radio"]:checked + .radio-label { background: var(--accent); color: white; border-color: var(--accent); }
+    input[type="radio"]#mEtc:checked + .radio-label { background: #ea580c; border-color: #ea580c; }
+
+    /* 수량 3개 요소 동일 사이즈 그리드 (1:1:1) */
+    .stepper-container { 
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; 
+      margin-top: 4px; 
+      width: 100%;
+    }
+    .step-btn { 
+      width: 100%;
+      height: 58px; 
+      border: 1px solid #cbd5e1; 
+      border-radius: 10px; 
+      font-size: 26px; 
+      font-weight: 800; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      transition: background-color 0.1s, transform 0.05s;
+    }
+    .step-btn-minus {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+    .step-btn-plus {
+      background: #eff6ff;
+      color: var(--accent);
+      border-color: #bfdbfe;
+    }
+    .step-btn:active { 
+      transform: scale(0.96); 
+      filter: brightness(0.92);
+    }
+    .qty-display-input { 
+      width: 100%;
+      height: 58px; 
+      font-size: 26px; 
+      font-weight: 800; 
+      text-align: center; 
+      border: 2px solid #94a3b8; 
+      border-radius: 10px; 
+      color: var(--primary); 
+      background: #fff;
+    }
+
+    /* 등록 버튼 */
+    .submit-btn { width: 100%; height: 54px; background: #059669; color: white; border: none; font-size: 17px; font-weight: bold; border-radius: 10px; margin-top: 14px; cursor: pointer; }
+    .submit-btn:active { background: #047857; }
+
+    /* 입고 현황 목록 */
+    .list-card { background: var(--card); border-radius: 14px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .record-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .record-item:last-child { border-bottom: none; }
+    .record-main { display: flex; align-items: center; gap: 8px; }
+    
+    /* 제조사 태그 색상 구분 */
+    .maker-tag { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+    .maker-tag-etc { background: var(--etc-bg); color: var(--etc-color); border: 1px solid var(--etc-border); font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+
+    .record-car { font-size: 15px; font-weight: bold; color: var(--text); }
+    .record-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .record-right { text-align: right; display: flex; align-items: center; gap: 10px; }
+    .record-spec { font-size: 13px; font-weight: bold; color: #475569; }
+    .record-qty { font-size: 17px; font-weight: 800; color: #059669; }
+    .del-btn { background: #fee2e2; color: #dc2626; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { 
+      getFirestore, collection, addDoc, deleteDoc, doc, 
+      onSnapshot, query, orderBy, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFAQhFb6hIkFiXfYYGJAaxBI5bw4gQ36U",
+      authDomain: "pile-ead40.firebaseapp.com",
+      projectId: "pile-ead40",
+      storageBucket: "pile-ead40.firebasestorage.app",
+      messagingSenderId: "179741282513",
+      appId: "1:179741282513:web:0bacd2b11e2196e0ae35f0",
+      measurementId: "G-CJJ68X4ZV7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const getTodayStr = () => {
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      return new Date(now.getTime() - offset).toISOString().split('T')[0];
+    };
+    const getCurrentTimeStr = () => {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    };
+
+    let selectedDate = getTodayStr();
+    const dateInput = document.getElementById("datePicker");
+    const timeInput = document.getElementById("arrivalTime");
+    dateInput.value = selectedDate;
+    timeInput.value = getCurrentTimeStr();
+
+    let isTimeManuallyEdited = false;
+    timeInput.addEventListener("input", () => {
+      isTimeManuallyEdited = true;
+    });
+
+    setInterval(() => {
+      if (!isTimeManuallyEdited && document.activeElement !== timeInput) {
+        timeInput.value = getCurrentTimeStr();
+      }
+    }, 60000);
+
+    window.refreshTimeToNow = function() {
+      timeInput.value = getCurrentTimeStr();
+      isTimeManuallyEdited = false;
+    };
+
+    let unsubscribe = null;
+
+    function clearDashboard() {
+      document.getElementById("sumVehicles").innerText = "0 대";
+      document.getElementById("sumTotal").innerText = "0 본";
+      document.getElementById("sum9m").innerText = "0 본";
+      document.getElementById("sum9mCars").innerText = "0대";
+      document.getElementById("sum10m").innerText = "0 본";
+      document.getElementById("sum10mCars").innerText = "0대";
+      document.getElementById("sum12m").innerText = "0 본";
+      document.getElementById("sum12mCars").innerText = "0대";
+      document.getElementById("sum15m").innerText = "0 본";
+      document.getElementById("sum15mCars").innerText = "0대";
+      document.getElementById("recordList").innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px 0; font-size:13px;">불러오는 중...</div>`;
+    }
+
+    function loadDateData(date) {
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+      }
+
+      clearDashboard();
+
+      const listContainer = document.getElementById("recordList");
+      const colRef = collection(db, "daily_piles", date, "records");
+      const q = query(colRef, orderBy("arrivalTime", "desc"));
+
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        let totalCount = 0;
+        let sum9m = 0, sum10m = 0, sum12m = 0, sum15m = 0;
+        let cars9m = 0, cars10m = 0, cars12m = 0, cars15m = 0;
+        const totalVehicles = snapshot.size;
+        listContainer.innerHTML = "";
+
+        if (snapshot.empty) {
+          listContainer.innerHTML = `<div style="text-align:center; color:#94a3b8; padding: 20px 0; font-size:13px;">${date} 입고 내역이 없습니다.</div>`;
+          document.getElementById("sumVehicles").innerText = "0 대";
+          document.getElementById("sumTotal").innerText = "0 본";
+          document.getElementById("sum9m").innerText = "0 본";
+          document.getElementById("sum9mCars").innerText = "0대";
+          document.getElementById("sum10m").innerText = "0 본";
+          document.getElementById("sum10mCars").innerText = "0대";
+          document.getElementById("sum12m").innerText = "0 본";
+          document.getElementById("sum12mCars").innerText = "0대";
+          document.getElementById("sum15m").innerText = "0 본";
+          document.getElementById("sum15mCars").innerText = "0대";
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const item = docSnap.data();
+          const docId = docSnap.id;
+          const qty = Number(item.qty) || 0;
+          const len = String(item.length);
+          const maker = item.maker || "기타";
+
+          totalCount += qty;
+          if (len === "9") {
+            sum9m += qty;
+            cars9m += 1;
+          } else if (len === "10") {
+            sum10m += qty;
+            cars10m += 1;
+          } else if (len === "12") {
+            sum12m += qty;
+            cars12m += 1;
+          } else if (len === "15") {
+            sum15m += qty;
+            cars15m += 1;
+          }
+
+          const tagClass = (maker === "기타") ? "maker-tag-etc" : "maker-tag";
+
+          const row = document.createElement("div");
+          row.className = "record-item";
+          row.innerHTML = `
+            <div>
+              <div class="record-main">
+                <span class="${tagClass}">${maker}</span>
+                <span class="record-car">차량 ${item.carNum}</span>
+              </div>
+              <div class="record-meta">${item.arrivalTime} 도착</div>
+            </div>
+            <div class="record-right">
+              <div>
+                <div class="record-spec">${item.length}m 파일</div>
+                <div class="record-qty">${qty} 본</div>
+              </div>
+              <button class="del-btn" onclick="deleteRecord('${docId}')">취소</button>
+            </div>
+          `;
+          listContainer.appendChild(row);
+        });
+
+        document.getElementById("sumVehicles").innerText = `${totalVehicles} 대`;
+        document.getElementById("sumTotal").innerText = `${totalCount} 본`;
+        
+        document.getElementById("sum9m").innerText = `${sum9m} 본`;
+        document.getElementById("sum9mCars").innerText = `${cars9m}대`;
+
+        document.getElementById("sum10m").innerText = `${sum10m} 본`;
+        document.getElementById("sum10mCars").innerText = `${cars10m}대`;
+
+        document.getElementById("sum12m").innerText = `${sum12m} 본`;
+        document.getElementById("sum12mCars").innerText = `${cars12m}대`;
+
+        document.getElementById("sum15m").innerText = `${sum15m} 본`;
+        document.getElementById("sum15mCars").innerText = `${cars15m}대`;
+      }, (error) => {
+        console.error("데이터 로드 오류:", error);
+      });
+    }
+
+    window.submitRecord = async function() {
+      const carNum = document.getElementById("carNum").value.trim();
+      const arrivalTime = document.getElementById("arrivalTime").value;
+      const makerRadio = document.querySelector('input[name="pileMaker"]:checked');
+      const lengthRadio = document.querySelector('input[name="pileLen"]:checked');
+      const qty = parseInt(document.getElementById("pileQty").value, 10);
+
+      if (!carNum || carNum.length < 4) {
+        alert("차량번호 4자리를 정확히 입력해주세요.");
+        document.getElementById("carNum").focus();
+        return;
+      }
+      if (!arrivalTime) {
+        alert("도착시간을 입력해주세요.");
+        return;
+      }
+      if (!makerRadio) {
+        alert("제조사를 선택해주세요.");
+        return;
+      }
+      if (!lengthRadio) {
+        alert("파일 길이를 선택해주세요.");
+        return;
+      }
+      if (isNaN(qty) || qty <= 0) {
+        alert("올바른 수량을 입력해주세요.");
+        return;
+      }
+
+      const colRef = collection(db, "daily_piles", selectedDate, "records");
+      await addDoc(colRef, {
+        carNum: carNum,
+        arrivalTime: arrivalTime,
+        maker: makerRadio.value,
+        length: lengthRadio.value,
+        qty: qty,
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("carNum").value = "";
+      refreshTimeToNow();
+      document.getElementById("pileQty").value = "5";
+      document.getElementById("carNum").focus();
+    };
+
+    window.changeQty = function(delta) {
+      const qtyInput = document.getElementById("pileQty");
+      let current = parseInt(qtyInput.value, 10) || 0;
+      current += delta;
+      if (current < 1) current = 1;
+      qtyInput.value = current;
+    };
+
+    window.deleteRecord = async function(docId) {
+      if (confirm("해당 입고 내역을 삭제하시겠습니까?")) {
+        await deleteDoc(doc(db, "daily_piles", selectedDate, "records", docId));
+      }
+    };
+
+    const handleDateChange = (e) => {
+      const val = e.target.value;
+      if (val && val !== selectedDate) {
+        selectedDate = val;
+        loadDateData(selectedDate);
+      }
+    };
+    dateInput.addEventListener("change", handleDateChange);
+    dateInput.addEventListener("input", handleDateChange);
+
+    window.setToday = function() {
+      selectedDate = getTodayStr();
+      dateInput.value = selectedDate;
+      refreshTimeToNow();
+      loadDateData(selectedDate);
+    };
+
+    loadDateData(selectedDate);
+  </script>
+<meta property="og:title" content="삼성E&A 세종 2.0 현장-2,3호기 | 파일 입고 관리" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:image:width" content="1501" data-id="th-modified" ><meta property="og:image:height" content="1501" data-id="th-modified" ><meta property="og:image:type" content="image/png" data-id="th-modified" ><meta property="og:url" content="https://piletoday.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="piletoday.tiiny.site" src="https://analytics.tiiny.net/js/plausible.js"></script></head>
+<body>
+  <div class="container">
+    <div class="author-badge">제작 김진우</div>
+
+    <div class="site-header">
+      삼성E&A 세종 2.0 현장-2,3호기
+    </div>
+
+    <!-- 날짜 선택 바 -->
+    <div class="date-bar">
+      <input type="date" id="datePicker" class="date-input">
+      <button class="today-btn" onclick="setToday()">오늘</button>
+    </div>
+
+    <!-- 최상단 실시간 집계 카드 -->
+    <div class="summary-card">
+      <div class="summary-title">선택일자 누적 입고 합계</div>
+      
+      <div class="main-totals">
+        <div class="total-box">
+          <div class="total-label">총 입고 차량</div>
+          <div class="total-val" id="sumVehicles">0 대</div>
+        </div>
+        <div class="total-box">
+          <div class="total-label">총 입고 수량</div>
+          <div class="total-val" id="sumTotal">0 본</div>
+        </div>
+      </div>
+
+      <!-- 본수: 12px / 대수: 15px 적용 그리드 -->
+      <div class="sub-grid">
+        <div class="sub-item">
+          <div class="sub-label">9m</div>
+          <div class="sub-num" id="sum9m">0 본</div>
+          <div class="sub-cars" id="sum9mCars">0대</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">10m</div>
+          <div class="sub-num" id="sum10m">0 본</div>
+          <div class="sub-cars" id="sum10mCars">0대</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">12m</div>
+          <div class="sub-num" id="sum12m">0 본</div>
+          <div class="sub-cars" id="sum12mCars">0대</div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label">15m</div>
+          <div class="sub-num" id="sum15m">0 본</div>
+          <div class="sub-cars" id="sum15mCars">0대</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 입고 등록 폼 -->
+    <div class="form-card">
+      <div class="card-heading">🚛 신규 입고 등록</div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>차량번호 (4자리)</label>
+          <input type="tel" id="carNum" class="input-field" placeholder="1234" maxlength="4">
+        </div>
+        <div class="form-group">
+          <label>도착시간</label>
+          <div class="time-control-group">
+            <input type="time" id="arrivalTime" class="input-field">
+            <button type="button" class="time-now-btn" onclick="refreshTimeToNow()">지금</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 제조사 선택 5종 (KCC, 동진, 아주, 동양, 기타) -->
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>제조사</label>
+        <div class="radio-group">
+          <input type="radio" id="mKcc" name="pileMaker" value="KCC" checked>
+          <label for="mKcc" class="radio-label">KCC</label>
+
+          <input type="radio" id="mDongjin" name="pileMaker" value="동진">
+          <label for="mDongjin" class="radio-label">동진</label>
+
+          <input type="radio" id="mAju" name="pileMaker" value="아주">
+          <label for="mAju" class="radio-label">아주</label>
+
+          <input type="radio" id="mDongyang" name="pileMaker" value="동양">
+          <label for="mDongyang" class="radio-label">동양</label>
+
+          <input type="radio" id="mEtc" name="pileMaker" value="기타">
+          <label for="mEtc" class="radio-label">기타</label>
+        </div>
+      </div>
+
+      <!-- 파일 길이 선택 (9m, 10m, 12m, 15m) -->
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label>파일 길이</label>
+        <div class="radio-group">
+          <input type="radio" id="len9" name="pileLen" value="9" checked>
+          <label for="len9" class="radio-label">9m</label>
+
+          <input type="radio" id="len10" name="pileLen" value="10">
+          <label for="len10" class="radio-label">10m</label>
+
+          <input type="radio" id="len12" name="pileLen" value="12">
+          <label for="len12" class="radio-label">12m</label>
+
+          <input type="radio" id="len15" name="pileLen" value="15">
+          <label for="len15" class="radio-label">15m</label>
+        </div>
+      </div>
+
+      <!-- 1:1:1 균등 3분할 대형 수량 조절부 -->
+      <div class="form-group">
+        <label>입고 수량 (본)</label>
+        <div class="stepper-container">
+          <button type="button" class="step-btn step-btn-minus" onclick="changeQty(-1)">－ 1</button>
+          <input type="number" id="pileQty" class="qty-display-input" value="5" min="1">
+          <button type="button" class="step-btn step-btn-plus" onclick="changeQty(1)">＋ 1</button>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitRecord()">입고 등록 완료</button>
+    </div>
+
+    <!-- 당일 상세 입고 리스트 -->
+    <div class="list-card">
+      <div class="card-heading" style="margin-bottom: 8px;">📋 입고 내역 리스트 (최신순)</div>
+      <div id="recordList"></div>
+    </div>
+  </div>
+</body>
+</html>
